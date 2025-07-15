@@ -14,18 +14,20 @@ class Tweet(CommonModel):
     def __str__(self):
         return f"{self.user} : {self.payload}"
 
-    def likes(self):
-        return self.like_set.all().count()
+    def like_count(self):
+        return self.likes.count()
 
 
 class Like(CommonModel):
     user = models.ForeignKey(
         "users.user",
         on_delete=models.CASCADE,
+        related_name="likes",
     )
     tweet = models.ForeignKey(
         "tweets.tweet",
         on_delete=models.CASCADE,
+        related_name="likes",
     )
 
     def __str__(self) -> str:
