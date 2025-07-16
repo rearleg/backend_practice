@@ -21,7 +21,6 @@ class ContainElonMusk(admin.SimpleListFilter):
         else:
             elon_musk
 
-
 @admin.register(Tweet)
 class TweetAdmin(admin.ModelAdmin):
     list_display = (
