@@ -11,10 +11,8 @@ class User(AbstractUser):
         max_length=50,
         editable=False,
     )
-    avatar = (
-        models.ImageField(
-            blank=True,
-        ),
+    avatar = models.ImageField(
+        blank=True,
     )
     name = models.CharField(
         max_length=100,

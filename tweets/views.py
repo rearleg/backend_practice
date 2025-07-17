@@ -1,15 +1,15 @@
-from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Tweet
+from .serializers import TweetSerializer
 
 
 # Create your views here.
-def see_tweets(request):
-    tweets = Tweet.objects.all()
-    return render(
-        request,
-        "see_tweets.html",
-        {
-            "tweets": tweets,
-            "title": "See All Tweets",
-        },
+@api_view()
+def tweets(request):
+    tweet = Tweet.objects.all()
+    serializer = TweetSerializer(
+        tweet,
+        many=True,
     )
+    return Response(serializer.data)

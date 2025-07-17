@@ -9,6 +9,7 @@ class Tweet(CommonModel):
     user = models.ForeignKey(
         "users.user",
         on_delete=models.CASCADE,
+        related_name="tweets",
     )
 
     def __str__(self):
