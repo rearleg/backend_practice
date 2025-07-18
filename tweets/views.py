@@ -1,15 +1,57 @@
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
+from rest_framework.status import HTTP_204_NO_CONTENT
 from .models import Tweet
 from .serializers import TweetSerializer
 
 
-# Create your views here.
-@api_view()
-def tweets(request):
-    tweet = Tweet.objects.all()
-    serializer = TweetSerializer(
-        tweet,
-        many=True,
-    )
-    return Response(serializer.data)
+class Tweets(APIView):
+
+    def get(self, request):
+        all_tweets = Tweet.objects.all()
+        serializer = TweetSerializer(
+            all_tweets,
+            many=True,
+        )
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = TweetSerializer(data=request.data)
+        if serializer.is_valid():
+            created_tweet = serializer.save()
+            return Response(TweetSerializer(created_tweet).data)
+        else:
+            return Response(serializer.errors)
+
+
+class TweetDetail(APIView):
+
+    def get_objects(self, pk):
+        try:
+            return Tweet.objects.get(pk=pk)
+        except Tweet.DoesNotExist:
+            raise NotFound
+
+    def get(self, request, pk):
+        tweet = self.get_objects(pk)
+        serializer = TweetSerializer(tweet)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        tweet = self.get_objects(pk)
+        serializer = TweetSerializer(
+            tweet,
+            data=request.data,
+            partial=True,
+        )
+        if serializer.is_valid():
+            updated_tweet = serializer.save()
+            return Response(TweetSerializer(updated_tweet).data)
+        else:
+            return Response(serializer.errors)
+
+    def delete(self, request, pk):
+        tweet = self.get_objects(pk)
+        tweet.delete()
+        return Response(status=HTTP_204_NO_CONTENT)

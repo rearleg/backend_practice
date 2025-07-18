@@ -1,14 +1,13 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 from .models import User
 from tweets.serializers import TweetSerializer
 
 
-class UserSerializer(serializers.Serializer):
-    pk = serializers.IntegerField()
-    username = serializers.CharField(
-        max_length=100,
-        required=True,
-    )
+class UserSerializer(ModelSerializer):
     tweets = TweetSerializer(
         many=True,
     )
+
+    class Meta:
+        model = User
+        fields = "id", "username", "tweets"
