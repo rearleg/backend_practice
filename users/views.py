@@ -42,6 +42,9 @@ class UsersList(APIView):
 
 
 class UserDetail(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         get_user = User.objects.get(pk=pk)
         serializer = UserDetailSerializer(get_user)
