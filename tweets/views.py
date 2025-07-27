@@ -1,15 +1,15 @@
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.status import HTTP_204_NO_CONTENT
+from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from .models import Tweet
 from .serializers import TweetSerializer
 
 
 class Tweets(APIView):
 
-    permission_classed = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
         all_tweets = Tweet.objects.all()
@@ -22,15 +22,15 @@ class Tweets(APIView):
     def post(self, request):
         serializer = TweetSerializer(data=request.data)
         if serializer.is_valid():
-            created_tweet = serializer.save()
+            created_tweet = serializer.save(user=request.user)
             return Response(TweetSerializer(created_tweet).data)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class TweetDetail(APIView):
 
-    permission_classed = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_objects(self, pk):
         try:
@@ -56,7 +56,7 @@ class TweetDetail(APIView):
             updated_tweet = serializer.save()
             return Response(TweetSerializer(updated_tweet).data)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         tweet = self.get_objects(pk)

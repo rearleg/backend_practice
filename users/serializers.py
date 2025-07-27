@@ -36,6 +36,7 @@ class UserTweetsSerializer(ModelSerializer):
         fields = "id", "username", "tweets"
 
 
+
 class PrivateUserSerializer(ModelSerializer):
 
     class Meta:
